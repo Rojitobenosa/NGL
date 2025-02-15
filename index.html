@@ -3,51 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anonymous Messages</title>
+    <title>Anonymous Q&A</title>
     <script type="module">
-        // Import Firebase SDK
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
         import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
 
-        // 🔥 Your Firebase Config (Replace with yours!)
-      const firebaseConfig = {
-
-  apiKey: "AIzaSyCJibf9YV4FwV7vVNRxeHiXZ5LnjdZxSxQ",
-
-  authDomain: "ngl-clone-2cfd4.firebaseapp.com",
-
-  databaseURL: "https://ngl-clone-2cfd4-default-rtdb.firebaseio.com",
-
-  projectId: "ngl-clone-2cfd4",
-
-  storageBucket: "ngl-clone-2cfd4.firebasestorage.app",
-
-  messagingSenderId: "47261995528",
-
-  appId: "1:47261995528:web:1c818ba3e37618b874b7bd"
-
-};
-        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyCJibf9YV4FwV7vVNRxeHiXZ5LnjdZxSxQ",
+            authDomain: "ngl-clone-2cfd4.firebaseapp.com",
+            databaseURL: "https://ngl-clone-2cfd4-default-rtdb.firebaseio.com",
+            projectId: "ngl-clone-2cfd4",
+            storageBucket: "ngl-clone-2cfd4.firebasestorage.app",
+            messagingSenderId: "47261995528",
+            appId: "1:47261995528:web:1c818ba3e37618b874b7bd"
+        };
+        
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Function to send message
         function sendMessage() {
-            const name = document.getElementById("name").value;
             const message = document.getElementById("message").value;
-
-            if (name && message) {
+            if (message) {
                 const messageRef = push(ref(db, "messages"));
-                set(messageRef, { name, message });
-
+                set(messageRef, { message });
                 alert("Message sent!");
                 document.getElementById("messageForm").reset();
             } else {
-                alert("Please enter both name and message.");
+                alert("Please enter a message.");
             }
         }
 
-        // Function to display messages in real time
         function loadMessages() {
             const messagesRef = ref(db, "messages");
             onValue(messagesRef, (snapshot) => {
@@ -55,8 +40,9 @@
                 messagesList.innerHTML = "";
                 snapshot.forEach((childSnapshot) => {
                     const msg = childSnapshot.val();
-                    const msgElement = document.createElement("p");
-                    msgElement.textContent = `${msg.name}: ${msg.message}`;
+                    const msgElement = document.createElement("div");
+                    msgElement.className = "message-box";
+                    msgElement.textContent = msg.message;
                     messagesList.appendChild(msgElement);
                 });
             });
@@ -64,16 +50,64 @@
 
         window.onload = loadMessages;
     </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #ff6b81, #ff4757);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            color: black;
+        }
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            resize: none;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        button {
+            width: 100%;
+            background: #ff4757;
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #e84118;
+        }
+        .message-box {
+            background: #ff6b81;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Send an Anonymous Message</h2>
-    <form id="messageForm" onsubmit="sendMessage(); return false;">
-        <input id="name" type="text" placeholder="Your name" required><br>
-        <textarea id="message" placeholder="Your message" required></textarea><br>
-        <button type="submit">Send</button>
-    </form>
-
+    <div class="container">
+        <h2>Send an Anonymous Message</h2>
+        <form id="messageForm" onsubmit="sendMessage(); return false;">
+            <textarea id="message" placeholder="Type your anonymous message..." required></textarea><br>
+            <button type="submit">Send</button>
+        </form>
+    </div>
     <h2>Messages</h2>
-    <div id="messages"></div>
+    <div id="messages" class="container"></div>
 </body>
 </html>
