@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anonymous Messages</title>
+    <script type="module">
+        // Import Firebase SDK
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getDatabase, ref, push, set, onValue } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-database.js";
+
+        // 🔥 Your Firebase Config (Replace with yours!)
+      const firebaseConfig = {
+
+  apiKey: "AIzaSyCJibf9YV4FwV7vVNRxeHiXZ5LnjdZxSxQ",
+
+  authDomain: "ngl-clone-2cfd4.firebaseapp.com",
+
+  databaseURL: "https://ngl-clone-2cfd4-default-rtdb.firebaseio.com",
+
+  projectId: "ngl-clone-2cfd4",
+
+  storageBucket: "ngl-clone-2cfd4.firebasestorage.app",
+
+  messagingSenderId: "47261995528",
+
+  appId: "1:47261995528:web:1c818ba3e37618b874b7bd"
+
+};
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Function to send message
+        function sendMessage() {
+            const name = document.getElementById("name").value;
+            const message = document.getElementById("message").value;
+
+            if (name && message) {
+                const messageRef = push(ref(db, "messages"));
+                set(messageRef, { name, message });
+
+                alert("Message sent!");
+                document.getElementById("messageForm").reset();
+            } else {
+                alert("Please enter both name and message.");
+            }
+        }
+
+        // Function to display messages in real time
+        function loadMessages() {
+            const messagesRef = ref(db, "messages");
+            onValue(messagesRef, (snapshot) => {
+                const messagesList = document.getElementById("messages");
+                messagesList.innerHTML = "";
+                snapshot.forEach((childSnapshot) => {
+                    const msg = childSnapshot.val();
+                    const msgElement = document.createElement("p");
+                    msgElement.textContent = `${msg.name}: ${msg.message}`;
+                    messagesList.appendChild(msgElement);
+                });
+            });
+        }
+
+        window.onload = loadMessages;
+    </script>
+</head>
+<body>
+    <h2>Send an Anonymous Message</h2>
+    <form id="messageForm" onsubmit="sendMessage(); return false;">
+        <input id="name" type="text" placeholder="Your name" required><br>
+        <textarea id="message" placeholder="Your message" required></textarea><br>
+        <button type="submit">Send</button>
+    </form>
+
+    <h2>Messages</h2>
+    <div id="messages"></div>
+</body>
+</html>
